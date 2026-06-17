@@ -75,7 +75,7 @@ ${pass?
 "<p>📖 Review the lessons and try again.</p><p><b>🔄 RETAKE REQUIRED</b></p>"
 }
 <h3>Badges</h3>${badges.map(b=>"<span class='badge'>"+b+"</span>").join("")}
-<br><br><button class='choice' onclick='location.reload()'>🔄 Retry Journey</button>
+<button class='choice' onclick='chapter=0;q=-1;score=0;lives=3;badges=[];ach=[];draw()'>🔄 Retry Journey</button>
 </div>`;
 return;
 }
