@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bible Quest V7 Final RC</title>
+<style>
+body{
+font-family:Arial,sans-serif;
+margin:0;
+color:white;
+background:linear-gradient(#06142e,#102a5c,#1d4e89);
+}
+.wrap{max-width:900px;margin:auto;padding:20px}
+.hud,.panel{background:rgba(0,0,0,.35);padding:15px;border-radius:16px}
+.hud{display:flex;justify-content:space-around;flex-wrap:wrap}
+.panel{margin-top:15px}
+.choice{display:block;width:100%;padding:14px;margin:8px 0;border:none;border-radius:12px}
+.badge{display:inline-block;background:gold;color:black;padding:6px 10px;margin:4px;border-radius:10px}
+.sky{text-align:center;font-size:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="sky">⭐ ⭐ 🌙 ⭐ ⭐</div>
+<div class="hud" id="hud"></div>
+<div id="game"></div>
+</div>
+
+<script>
+let chapter=0,q=-1,score=0,lives=3;
+let badges=[],ach=[];
+
+const chapters=[
+["Prayer","Prayer is talking with God.",[["Prayer is...","Talking with God","Showing off","a"],["Prayer helps with...","Guidance","Confusion","a"],["Prayer must be long.","False","True","a"]],"🙏 Prayer Master"],
+["Choices","Godly choices honor God.",[["Temptation is...","Pressure to do wrong","A reward","a"],["Good choices build...","Character","Trouble","a"],["Peer pressure should be...","Handled wisely","Always followed","a"]],"⚖️ Wise Decision Maker"],
+["Forgiveness","Jesus taught forgiveness.",[["Jesus taught...","Forgive","Stay bitter","a"],["Forgiveness heals...","Relationships","Nothing","a"],["Forgiveness shows...","Grace","Weakness","a"]],"🤝 Forgiveness Champion"],
+["Trust","Trust God through hard times.",[["Perseverance means...","Keep going","Quit","a"],["Trusting God means...","Relying on Him","Ignoring Him","a"],["Believers should...","Keep faith","Give up","a"]],"🛡️ Trust Walker"],
+["Growing","Faith grows through prayer and Bible reading.",[["Bible reading helps...","Grow faith","Forget faith","a"],["Serving others is...","Living faith","Unimportant","a"],["Faith grows through...","Prayer and learning","Luck","a"]],"🌱 Growing In Faith"]
+];
+
+function hud(){
+document.getElementById("hud").innerHTML=`
+<div>❤️ ${"❤️".repeat(lives)}</div>
+<div>⭐ ${score}</div>
+<div>🏅 ${badges.length}</div>
+<div>🏆 ${ach.length}</div>`;
+}
+
+function trail(){
+let p=chapter+1;
+return `<div style="text-align:center;font-size:22px">
+✝️ Summit<br>📍5 ${p==5?"🏃":""}<br>📍4 ${p==4?"🏃":""}<br>📍3 ${p==3?"🏃":""}<br>📍2 ${p==2?"🏃":""}<br>📍1 ${p==1?"🏃":""}
+</div>`;
+}
+
+function draw(){
+hud();
+const g=document.getElementById("game");
+
+if(chapter>=chapters.length){
+let pct=Math.round(score/15*100);
+let pass=pct>=80;
+
+if(score===15 && !badges.includes("💎 Perfect Score")) badges.push("💎 Perfect Score");
+if(lives===3 && !badges.includes("❤️ No Mistakes")) badges.push("❤️ No Mistakes");
+if(pass && !badges.includes("🏔️ Summit Conqueror")) badges.push("🏔️ Summit Conqueror");
+
+g.innerHTML=`<div class='panel'>
+<h1>${pass?"🏆 SUMMIT REACHED":"❌ JOURNEY INCOMPLETE"}</h1>
+<h2>Score: ${score}/15 (${pct}%)</h2>
+${pass?
+"<p>📸 Take a screenshot of this screen and submit it for assignment credit.</p><p><b>🏔️ Summit Conqueror Unlocked!</b></p>"
+:
+"<p>📖 Review the lessons and try again.</p><p><b>🔄 RETAKE REQUIRED</b></p>"
+}
+<h3>Badges</h3>${badges.map(b=>"<span class='badge'>"+b+"</span>").join("")}
+<br><br><button class='choice' onclick='location.reload()'>🔄 Retry Journey</button>
+</div>`;
+return;
+}
+
+let ch=chapters[chapter];
+
+if(q==-1){
+g.innerHTML=`<div class='panel'>${trail()}
+<h2>📖 Chapter ${chapter+1}: ${ch[0]}</h2>
+<p>${ch[1]}</p>
+<button class='choice' onclick='q=0;draw()'>Start Chapter</button></div>`;
+return;
+}
+
+if(q>=ch[2].length){
+ach.push(ch[3]);
+const award=["🥉 Faith Beginner","📖 Lesson Reader","🤝 Forgiveness Helper","🏔️ Mountain Climber","⭐ Quiz Master"];
+if(chapter<award.length) badges.push(award[chapter]);
+
+g.innerHTML=`<div class='panel'>${trail()}
+<h2>🏆 Chapter Complete!</h2>
+<p>Achievement Unlocked: ${ch[3]}</p>
+${badges.map(b=>"<span class='badge'>"+b+"</span>").join("")}
+<button class='choice' onclick='chapter++;q=-1;draw()'>Climb Higher</button></div>`;
+return;
+}
+
+let qq=ch[2][q];
+g.innerHTML=`<div class='panel'>${trail()}
+<h3>${qq[0]}</h3>
+<button class='choice' onclick="answer('a')">${qq[1]}</button>
+<button class='choice' onclick="answer('b')">${qq[2]}</button>
+</div>`;
+}
+
+function answer(a){
+if(a===chapters[chapter][2][q][3]) score++;
+else lives--;
+if(lives<=0){chapter=chapters.length;}
+else q++;
+draw();
+}
+
+draw();
+</script>
+</body>
+</html>
